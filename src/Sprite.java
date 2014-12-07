@@ -16,6 +16,7 @@ public class Sprite
 	public float tileWidth = 16;
 	public float tileHeight = 16;
 	
+	public boolean remove = false;
 	
 	public void render()
 	{
@@ -57,6 +58,11 @@ public class Sprite
 	}
 	
 	
+	public void onCollision(Sprite sprite)
+	{
+		
+	}
+	
 	public void update(int delta)
 	{
 		double deltaf = delta / 1000000000.0D;
@@ -64,6 +70,13 @@ public class Sprite
 		xPos += xVel * deltaf;
 		yPos += yVel * deltaf;	
 		rot += rotVel * deltaf;
+		
+		for (Sprite sprite : LD31main.sprites)
+		{
+			if (sprite == this) continue;
+			double dist = LD31main.getDistance(this,  sprite);
+			if (dist <= sprite.radius + this.radius) this.onCollision(sprite); 
+		}
 	}
 	
 }

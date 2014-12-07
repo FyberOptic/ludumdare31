@@ -18,6 +18,8 @@ public class LD31main {
 	public static final int SCREEN_WIDTH = 800;
 	public static final int SCREEN_HEIGHT = 600;
 	
+	static List<Sprite> sprites = new ArrayList<Sprite>();
+	static List<Sprite> deadsprites = new ArrayList<Sprite>();
 	
 	static Texture textureAtlas = null;
 	
@@ -28,6 +30,15 @@ public class LD31main {
 	 */
 	public long getTime() {
 	    return System.nanoTime();// / 1000000;
+	}
+	
+	
+	public static double getDistance(Sprite s1, Sprite s2)
+	{
+		double x1 = s2.xPos - s1.xPos;
+		double y1 = s2.yPos - s1.yPos;
+				
+		return Math.sqrt(x1 * x1 + y1 * y1);		
 	}
 	
 	
@@ -114,9 +125,7 @@ public class LD31main {
 		
 		Planet planet = new Planet();
 		Ship ship = new Ship();
-		Asteroid asteroid = new Asteroid();
-		
-		List<Sprite> sprites = new ArrayList<Sprite>();
+		Asteroid asteroid = new Asteroid();	
 		
 		sprites.add(planet);		
 		sprites.add(asteroid);
@@ -181,9 +190,12 @@ public class LD31main {
         		ship.yVel += Math.sin(Math.toRadians(ship.rot - 90)) * accelSpeed * deltaf;
         	}
         	
-        	for (Sprite s : sprites) s.update(deltaTicks);
+        	for (Sprite s : sprites) { s.update(deltaTicks); if (s.remove) deadsprites.add(s); }
         	
         	for (Sprite s : sprites) s.render();
+        	
+        	for (Sprite s : deadsprites) sprites.remove(s);
+        	deadsprites.clear();
         	
         	//drawTile(1,0,0);
         	//drawTile(2,0,0);
