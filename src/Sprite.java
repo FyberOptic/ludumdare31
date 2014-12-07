@@ -72,10 +72,10 @@ public class Sprite
 		rot += rotVel * deltaf;
 		
 		if (this != LD31main.planet)
-		{
+		{ 
 			double dist = LD31main.getDistance(this, LD31main.planet);
-			double deltaX = (this.xPos - LD31main.planet.xPos) / (dist / 15f);
-			double deltaY = (this.yPos - LD31main.planet.yPos) / (dist / 15f);
+			double deltaX = (this.xPos - LD31main.planet.xPos) / (dist / 10f);
+			double deltaY = (this.yPos - LD31main.planet.yPos) / (dist / 10f);
 			
 			xVel += -deltaX * deltaf;
 			yVel += -deltaY * deltaf;
@@ -88,10 +88,11 @@ public class Sprite
 			if (dist <= sprite.radius + this.radius) this.onCollision(sprite); 
 		}
 		
-		if (xPos - radius < 0 && xVel < 0) xVel = 0;
-		if (yPos - radius < 0 && yVel < 0) yVel = 0;
-		if (xPos + radius >= 160 && xVel > 0) xVel = 0;
-		if (yPos + radius >= 120 && yVel > 0) yVel = 0;
+		if (xPos < 0) xPos = 159;
+		if (yPos < 0) yPos = 119;
+		if (xPos >= 160) xPos = 0;
+		if (yPos >= 120) yPos = 0;
+		
 	}
 	
 }

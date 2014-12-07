@@ -4,9 +4,13 @@ import java.util.List;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.openal.AL;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import org.newdawn.slick.openal.Audio;
+import org.newdawn.slick.openal.AudioLoader;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
@@ -20,10 +24,15 @@ public class LD31main {
 	
 	static List<Sprite> sprites = new ArrayList<Sprite>();
 	static List<Sprite> deadsprites = new ArrayList<Sprite>();
+	static List<Sprite> newsprites = new ArrayList<Sprite>();
 	
 	static Texture textureAtlas = null;
 	
 	static Planet planet = null;
+	Ship ship = null;
+	
+	static Audio shootSound = null;
+	static Audio breakSound = null;
 	
 	/**
 	 * 
@@ -80,6 +89,31 @@ public class LD31main {
 	}
 	
 	
+	public void fireBullet()
+	{
+		Bullet bullet = new Bullet();
+		bullet.xPos = ship.xPos;
+		bullet.yPos = ship.yPos;
+		bullet.rot = ship.rot;
+		bullet.xVel = (float) (Math.cos(Math.toRadians(ship.rot - 90)) * 100);
+		bullet.yVel = (float) (Math.sin(Math.toRadians(ship.rot - 90)) * 100);
+		sprites.add(bullet);
+		 
+		shootSound.playAsSoundEffect((float) (0.9 + (Math.random() * 0.2)),  0.75f,  false);
+	}
+	
+	public void spawnAsteroid()
+	{
+		Asteroid a = new Asteroid(true);
+		a.xPos = (Math.random() * 320) - 80;
+		a.yPos = (Math.random() * 240) - 60;
+		a.xVel = 10;
+		a.yVel = -4;
+		a.rotVel = 10;
+		sprites.add(a);
+	}
+	
+	
 	/**
 	 * 
 	 * @throws IOException
@@ -88,7 +122,7 @@ public class LD31main {
 		
 		try {
             Display.setDisplayMode(new DisplayMode(SCREEN_WIDTH, SCREEN_HEIGHT));
-            Display.create();
+            Display.create(); 
         } catch (LWJGLException e) {
             e.printStackTrace();
             System.exit(0);
@@ -112,6 +146,8 @@ public class LD31main {
         
         GL11.glEnable(GL11.GL_TEXTURE_2D);
 		
+        shootSound = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/shoot.wav"));
+        breakSound = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/break.wav"));
         
 		textureAtlas = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/atlas.png"));
 		textureAtlas.setTextureFilter(GL11.GL_NEAREST);
@@ -125,19 +161,24 @@ public class LD31main {
 		int fpscount = 0;
 		
 		planet = new Planet();
-		Ship ship = new Ship();
-		Asteroid asteroid = new Asteroid();	
+		ship = new Ship();
+		Asteroid asteroid = new Asteroid(true);	
 		
 		sprites.add(planet);		
-		sprites.add(asteroid);
+		//sprites.add(asteroid);
 		sprites.add(ship);
 		
 		ship.xVel = 1;
 		ship.yVel = 2;
 		
-		asteroid.xVel = 1;
-		asteroid.yVel = 1;
+		asteroid.xPos = 20;
+		asteroid.xVel = 10;
+		asteroid.yVel = -5;
 		asteroid.rotVel = 10;
+		
+		spawnAsteroid();
+		
+		long asteroidTimer = 0;
 		
         boolean gameLoop = true;
 		while (gameLoop) 
@@ -167,16 +208,7 @@ public class LD31main {
         	    {
         	    	if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) gameLoop = false; 
         	    	
-        	    	if (Keyboard.getEventKey() == Keyboard.KEY_SPACE)
-        	    	{
-        	    		Bullet bullet = new Bullet();
-        	    		bullet.xPos = ship.xPos;
-        	    		bullet.yPos = ship.yPos;
-        	    		bullet.rot = ship.rot;
-        	    		bullet.xVel = (float) (Math.cos(Math.toRadians(ship.rot - 90)) * 90);
-        	    		bullet.yVel = (float) (Math.sin(Math.toRadians(ship.rot - 90)) * 90);
-        	    		sprites.add(bullet);
-        	    	}
+        	    	if (Keyboard.getEventKey() == Keyboard.KEY_SPACE) fireBullet();
         	    	
         	    	if (Keyboard.getEventKey() == Keyboard.KEY_BACK)
         	    	{
@@ -186,8 +218,13 @@ public class LD31main {
         	    }
         	}
         	
-        	float turnSpeed = 100;
-        	float accelSpeed = 20;
+        	while (Mouse.next())
+        	{
+        		if (Mouse.getEventButton() == 0 && Mouse.getEventButtonState()) fireBullet();
+        	}
+        	
+        	float turnSpeed = 160;
+        	float accelSpeed = 25;
         	
         	if (Keyboard.isKeyDown(Keyboard.KEY_A)) ship.rot -= turnSpeed * deltaf;
         	if (Keyboard.isKeyDown(Keyboard.KEY_D)) ship.rot += turnSpeed * deltaf;
@@ -195,15 +232,29 @@ public class LD31main {
         	{
         		ship.xVel += Math.cos(Math.toRadians(ship.rot - 90)) * accelSpeed * deltaf;
         		ship.yVel += Math.sin(Math.toRadians(ship.rot - 90)) * accelSpeed * deltaf;
+        		ship.thrusting = true;
         	}
+        	else ship.thrusting = false;
         	
-        	for (Sprite s : sprites) { s.update(deltaTicks); if (s.remove) deadsprites.add(s); }
+        	boolean hasAsteroids = false;
+        	
+        	for (Sprite s : sprites) { s.update(deltaTicks); if (s.remove) deadsprites.add(s); if (s instanceof Asteroid) hasAsteroids = true; }
         	
         	for (Sprite s : sprites) s.render();
         	
+        	for (Sprite s : newsprites) sprites.add(s);
+        	newsprites.clear();
         	for (Sprite s : deadsprites) sprites.remove(s);
         	deadsprites.clear();
         	
+        	if (!hasAsteroids) spawnAsteroid();
+        	asteroidTimer += deltaTicks;
+        	if (asteroidTimer > 10000000000L)
+        	{
+        		asteroidTimer -= 10000000000L;
+        		spawnAsteroid();
+        	}
+        	 
         	//drawTile(1,0,0);
         	//drawTile(2,0,0);
         	
@@ -212,7 +263,8 @@ public class LD31main {
             Display.update();
             if (Display.isCloseRequested()) gameLoop = false;
         }
-         
+        
+		AL.destroy();
         Display.destroy();
     }
     
