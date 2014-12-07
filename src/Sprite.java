@@ -87,6 +87,11 @@ public class Sprite
 			double dist = LD31main.getDistance(this,  sprite);
 			if (dist <= sprite.radius + this.radius) this.onCollision(sprite); 
 		}
+		
+		if (xPos - radius < 0 && xVel < 0) xVel = 0;
+		if (yPos - radius < 0 && yVel < 0) yVel = 0;
+		if (xPos + radius >= 160 && xVel > 0) xVel = 0;
+		if (yPos + radius >= 120 && yVel > 0) yVel = 0;
 	}
 	
 }

@@ -173,8 +173,8 @@ public class LD31main {
         	    		bullet.xPos = ship.xPos;
         	    		bullet.yPos = ship.yPos;
         	    		bullet.rot = ship.rot;
-        	    		bullet.xVel = (float) (Math.cos(Math.toRadians(ship.rot - 90)) * 80);
-        	    		bullet.yVel = (float) (Math.sin(Math.toRadians(ship.rot - 90)) * 80);
+        	    		bullet.xVel = (float) (Math.cos(Math.toRadians(ship.rot - 90)) * 90);
+        	    		bullet.yVel = (float) (Math.sin(Math.toRadians(ship.rot - 90)) * 90);
         	    		sprites.add(bullet);
         	    	}
         	    	
