@@ -23,6 +23,7 @@ public class LD31main {
 	
 	static Texture textureAtlas = null;
 	
+	static Planet planet = null;
 	
 	/**
 	 * 
@@ -123,7 +124,7 @@ public class LD31main {
 		int tickCounter = 0;
 		int fpscount = 0;
 		
-		Planet planet = new Planet();
+		planet = new Planet();
 		Ship ship = new Ship();
 		Asteroid asteroid = new Asteroid();	
 		
@@ -175,6 +176,12 @@ public class LD31main {
         	    		bullet.xVel = (float) (Math.cos(Math.toRadians(ship.rot - 90)) * 80);
         	    		bullet.yVel = (float) (Math.sin(Math.toRadians(ship.rot - 90)) * 80);
         	    		sprites.add(bullet);
+        	    	}
+        	    	
+        	    	if (Keyboard.getEventKey() == Keyboard.KEY_BACK)
+        	    	{
+        	    		ship.xVel = 0;
+        	    		ship.yVel = 0;
         	    	}
         	    }
         	}

@@ -71,6 +71,16 @@ public class Sprite
 		yPos += yVel * deltaf;	
 		rot += rotVel * deltaf;
 		
+		if (this != LD31main.planet)
+		{
+			double dist = LD31main.getDistance(this, LD31main.planet);
+			double deltaX = (this.xPos - LD31main.planet.xPos) / (dist / 15f);
+			double deltaY = (this.yPos - LD31main.planet.yPos) / (dist / 15f);
+			
+			xVel += -deltaX * deltaf;
+			yVel += -deltaY * deltaf;
+		}
+		
 		for (Sprite sprite : LD31main.sprites)
 		{
 			if (sprite == this) continue;
