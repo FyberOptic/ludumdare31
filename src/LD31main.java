@@ -34,6 +34,9 @@ public class LD31main {
 	static Audio shootSound = null;
 	static Audio breakSound = null;
 	
+	
+	
+	
 	/**
 	 * 
 	 * @return
@@ -43,6 +46,12 @@ public class LD31main {
 	}
 	
 	
+	/**
+	 * 
+	 * @param s1
+	 * @param s2
+	 * @return
+	 */
 	public static double getDistance(Sprite s1, Sprite s2)
 	{
 		double x1 = s2.xPos - s1.xPos;
@@ -89,6 +98,9 @@ public class LD31main {
 	}
 	
 	
+	/**
+	 * 
+	 */
 	public void fireBullet()
 	{
 		Bullet bullet = new Bullet();
@@ -102,6 +114,10 @@ public class LD31main {
 		shootSound.playAsSoundEffect((float) (0.9 + (Math.random() * 0.2)),  0.75f,  false);
 	}
 	
+	
+	/**
+	 * 
+	 */
 	public void spawnAsteroid()
 	{
 		Asteroid a = new Asteroid(true);
@@ -123,6 +139,7 @@ public class LD31main {
 		try {
             Display.setDisplayMode(new DisplayMode(SCREEN_WIDTH, SCREEN_HEIGHT));
             Display.create(); 
+            Display.setTitle("Ludum Dare 31 Entry - By FyberOptic");
         } catch (LWJGLException e) {
             e.printStackTrace();
             System.exit(0);
@@ -152,29 +169,20 @@ public class LD31main {
 		textureAtlas = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/atlas.png"));
 		textureAtlas.setTextureFilter(GL11.GL_NEAREST);
 		
-		GL11.glColor3f(1, 1, 1);;
-		//GL11.glDisable(GL11.GL_TEXTURE_2D);
-		
+		GL11.glColor3f(1, 1, 1);		
 		
 		long lastTime = getTime();
 		int tickCounter = 0;
 		int fpscount = 0;
 		
 		planet = new Planet();
-		ship = new Ship();
-		Asteroid asteroid = new Asteroid(true);	
+		ship = new Ship();		
 		
-		sprites.add(planet);		
-		//sprites.add(asteroid);
+		sprites.add(planet);
 		sprites.add(ship);
 		
 		ship.xVel = 1;
-		ship.yVel = 2;
-		
-		asteroid.xPos = 20;
-		asteroid.xVel = 10;
-		asteroid.yVel = -5;
-		asteroid.rotVel = 10;
+		ship.yVel = 2;		
 		
 		spawnAsteroid();
 		
@@ -253,12 +261,8 @@ public class LD31main {
         	{
         		asteroidTimer -= 10000000000L;
         		spawnAsteroid();
-        	}
-        	 
-        	//drawTile(1,0,0);
-        	//drawTile(2,0,0);
+        	}        	 
         	
-        	//drawTile((int)(Math.random() * 2), (float)Math.random() * SCREEN_WIDTH, (float)Math.random() * SCREEN_HEIGHT);
         	
             Display.update();
             if (Display.isCloseRequested()) gameLoop = false;

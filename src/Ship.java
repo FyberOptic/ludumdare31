@@ -52,6 +52,7 @@ public class Ship extends Sprite
 		else tileNum = 3;
 	}
 	
+	
 	public void onCollision(Sprite sprite)
 	{
 		if (sprite instanceof Bullet) return;

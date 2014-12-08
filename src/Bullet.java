@@ -52,6 +52,7 @@ public class Bullet extends Sprite
 		this.remove = true;
 	}
 	
+	
 	public void update(int delta)
 	{
 		super.update(delta);
